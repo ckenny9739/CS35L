@@ -1,0 +1,74 @@
+Connor Kenny
+sfrob.txt
+
+Writing sfrobu:
+I basically took my program from Assignment 5 and changed it
+so that it used system calls, just as the spec says to do.
+This is pretty easy because we already did the heavy lifting 2 weeks ago.
+
+Time Comparison:
+
+(I used the 5000000 byte file from lab.txt to compare the times)
+
+sfrob:
+
+real	0m1.141s
+user	0m0.830s
+sys	0m0.151s
+
+sfrobu:
+
+real	0m6.960s
+user	0m0.784s
+sys	0m6.213s
+
+Clearly, sfrob is faster than sfrobu. This is expected from our
+experiments in the lab section of this assignment.
+tr2b was faster than tr2u so the unbuffered version of sfrob is slower.
+It seems to be roughly ~5 times slower from this test.
+Interestingly, the user time is roughly the same
+so it is the system time that makes it much slower.
+All of the system calls that are made makes the program slow.
+
+Number of Comparisons as a function of input lines (aka seperated by spaces):
+Created these files using a program that writes random characters and spaces.
+
+100     lines - 544  	  comparisons	 O(2.72nlogn)
+10000   lines - 120942    comparisons	 O(3.02nlogn)
+1000000 lines - 18732581  comparisons	 O(3.12nlogn)
+
+As an estimate of the number of camparisons [ C(n) ] as a function of input lines:
+C(n) = 3nlog(n)
+
+As a function of input lines, the comparisons should be roughly
+O(nlogn) because that is the time complexity of quicksort.
+We only call frobcmp when quicksort does so this makes sense.
+
+
+Time Comparison of sfrob, sfrobu, and sfrobs:
+
+sfrob:
+
+real    0m1.141s
+user    0m0.830s
+sys     0m0.151s
+
+sfrobu:
+
+real    0m6.960s
+user    0m0.784s
+sys     0m6.213s
+
+sfrobs:
+
+real	0m0.479s
+user	0m0.074s
+sys	0m0.221s
+
+Clearly, sfrobs is the fastes by a wide margin. It is ~2.5 times faster than
+sfrob, and ~14.5 times faster than sfrobu.
+This makes sense since it is a shell script instead of a c program.
+It gets straight to the point and only frobnicates, sorts and frobnicates again.
+It doesn't have all the extra stuff that the c program has to do which makes
+it slower. This is actually very impressive and shows the power of scripting.
+If it can be scripted in essentially 3 commands, it is really impressive.

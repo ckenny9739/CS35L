@@ -1,0 +1,107 @@
+Connor Kenny
+lab5.txt
+
+Build old version:
+wget http://web.cs.ucla.edu/classes/fall15/cs35L/assign/coreutils-with-bug.tar.gz
+tar -zxvf coreutils-with-bug.tar.gz
+./configure
+make
+
+(Had problems with make... There were many errors at the end. Copied below)
+
+make  all-recursive
+make[1]: Entering directory '/w/home.02/cs/ugrad/connork/Desktop/CS35L/Lab05/coreutils-with-bug'
+Making all in lib
+make[2]: Entering directory '/w/home.02/cs/ugrad/connork/Desktop/CS35L/Lab05/coreutils-with-bug/lib'
+make  all-am
+make[3]: Entering directory '/w/home.02/cs/ugrad/connork/Desktop/CS35L/Lab05/coreutils-with-bug/lib'
+if gcc -DHAVE_CONFIG_H -DLIBDIR=\"/usr/local/lib\" -I. -I. -I..  -I.. -I.   -g -O2 -MT utimecmp.o -MD -MP -MF ".deps/utimecmp.Tpo" -c -o utimecmp.o utimecmp.c; \
+then mv -f ".deps/utimecmp.Tpo" ".deps/utimecmp.Po"; else rm -f ".deps/utimecmp.Tpo"; exit 1; fi
+In file included from utimecmp.c:41:0:
+utimens.h:2:5: error: conflicting types for 'futimens'
+ int futimens (int, char const *, struct timespec const [2]);
+      ^
+In file included from utimecmp.h:25:0,
+from utimecmp.c:25:
+/usr/include/sys/stat.h:374:12: note: previous declaration of 'futimens' was here
+extern int futimens (int __fd, __const struct timespec __times[2]) __THROW;
+^
+Makefile:659: recipe for target 'utimecmp.o' failed
+make[3]: *** [utimecmp.o] Error 1
+make[3]: Leaving directory '/w/home.02/cs/ugrad/connork/Desktop/CS35L/Lab05/coreutils-with-bug/lib'
+Makefile:414: recipe for target 'all' failed
+make[2]: *** [all] Error 2
+make[2]: Leaving directory '/w/home.02/cs/ugrad/connork/Desktop/CS35L/Lab05/coreutils-with-bug/lib'
+Makefile:419: recipe for target 'all-recursive' failed
+make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory '/w/home.02/cs/ugrad/connork/Desktop/CS35L/Lab05/coreutils-with-bug'
+Makefile:357: recipe for target 'all' failed
+make: *** [all] Error 2
+
+Build with patch:
+wget http://web.cs.ucla.edu/classes/fall15/cs35L/assign/coreutils.diff
+patch -p0 < coreutils.diff
+./configure
+make
+
+The renaming patch fixed these errors because the functions in the unpatched version
+had the incorrect name. The make command could not find these functions so it failed.
+The function name had already been declared with the extern keyword.
+By renaming the functions by adding coreutils_ to the beginning, it solves this problem
+and lets us actually build the program.
+
+Reproduce problem:
+tmp=$(mktemp -d)
+cd $tmp
+touch -d '1918-11-11 11:00 GMT' wwi-armistice
+touch now
+sleep 1
+touch now1
+TZ=UTC0 ~/Destkop/CS35L/Lab05/coreutils-with-bug/src/ls -lt --full-time wwi-armistice now now1
+# (PRINTED OUT THE FOLLOWING)
+-rw-r--r-- 1 connork csugrad 0 1918-11-11 11:00:00.000000000 +0000 wwi-armistice
+-rw-r--r-- 1 connork csugrad 0 2015-10-26 17:45:16.710070204 +0000 now1
+-rw-r--r-- 1 connork csugrad 0 2015-10-26 17:45:10.621841080 +0000 now
+# (THIS IS THE CORRECT BUGGY CODE)
+cd
+rm -fr $tmp
+
+What went wrong?
+There is a problem with comparing the dates.
+We get overflow because the date is such a really big negative number
+and when you compare you subtract so you end up with it as a really big postive number.
+We have to fix how it compares in timespec.h
+It simply subtracts the dates, we need to protect from overflow.
+
+How to fix source file:
+I went into the lib directory of coreutils-with-bug and changed timespec.h
+I made sure that it would no longer overflow.
+This was done by checking the comparison with < and > instead of subtracting.
+
+Construct patch file:
+diff -u coreutils-with-bug/lib/timespecOLD.h coreutils-with-bug/lib/timespec.h
+
+Changelog entry:
+I wrote the changelog entry using C-x 4 a
+It is in my lab5.diff which will be turned in.
+
+Reproduce problem in home directory:
+touch -d '1918-11-11 11:00 GMT' wwi-armistice
+touch now
+sleep 1
+touch now1
+TZ=UTCO ls -lt --full-time wwi-armistice now now1
+
+How does seasnet do?
+Seasnet actually converts the date incorrectly so you get a date in the future:
+-rw-r--r-- 1 connork csugrad 0 2054-12-17 17:28:16.000000000 +0000 wwi-armistice
+-rw-r--r-- 1 connork csugrad 0 2015-10-26 17:55:06.021422000 +0000 now1
+-rw-r--r-- 1 connork csugrad 0 2015-10-26 17:54:50.813011000 +0000 now
+
+Notice how the year is 2054 and the date is not the same...
+This is because in the home directory it holds the date in unsigned 32 bit,
+but on the local directory (tmp) it uses a signed 32 bit.
+By setting the date that old, it actually overflows and ends up as a date in the future!!
+This is a much worse problem than the coreutils bug that we fixed.
+
+-End of lab5.txt

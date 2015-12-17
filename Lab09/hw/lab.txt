@@ -1,0 +1,263 @@
+Connor Kenny
+lab.txt
+
+To start I just wrote a very short hello world program.
+compiled with:
+gcc -o helloworld helloworld.c
+run with:
+./helloworld
+
+Check dynamic libraries:
+ldd helloworld
+linux-vdso.so.1 =>  (0x00007ffe8c789000)
+libc.so.6 => /lib64/libc.so.6 (0x0000003cea800000)
+/lib64/ld-linux-x86-64.so.2 (0x0000003cea400000)
+
+It seems to use 3 dynamic libraries:
+vdso.so.1, libc.so.6, lib64/ld-linux-x86-64.so.2
+
+Check strace:
+strace ./helloworld
+execve("./helloworld", ["./helloworld"], [/* 33 vars */]) = 0
+brk(0)                                  = 0xbf6000
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fe3bd307000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+open("/etc/ld.so.cache", O_RDONLY)      = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=154676, ...}) = 0
+mmap(NULL, 154676, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7fe3bd2e1000
+close(3)                                = 0
+open("/lib64/libc.so.6", O_RDONLY)      = 3
+read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0p\356\201\352<\0\0\0"..., 832) = 832
+fstat(3, {st_mode=S_IFREG|0755, st_size=1926800, ...}) = 0
+mmap(0x3cea800000, 3750152, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x3cea800000
+mprotect(0x3cea98a000, 2097152, PROT_NONE) = 0
+mmap(0x3ceab8a000, 20480, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x18a000) = 0x3ceab8a000
+mmap(0x3ceab8f000, 18696, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x3ceab8f000
+close(3)                                = 0
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fe3bd2e0000
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fe3bd2df000
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fe3bd2de000
+arch_prctl(ARCH_SET_FS, 0x7fe3bd2df700) = 0
+mprotect(0x3ceab8a000, 16384, PROT_READ) = 0
+mprotect(0x3cea61f000, 4096, PROT_READ) = 0
+munmap(0x7fe3bd2e1000, 154676)          = 0
+fstat(1, {st_mode=S_IFCHR|0620, st_rdev=makedev(136, 2), ...}) = 0
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fe3bd306000
+write(1, "hello, world", 12hello, world)            = 12
+exit_group(12)                          = ?
++++ exited with 12 +++
+
+The system calls linked to dynamic linking seem to be that it opens
+the shared libraries, processes them, and finally closes them.
+Only 1 system call is used to actually print out hello, world.
+Most of the system calls are used on mmap and mprotect.
+Basically, the relationship is that the shared libraries are
+read and stored by the linker so that the program can use the
+information in the shared library.
+
+UID: 304437322
+
+ls /usr/bin | awk 'NR%101==304437322%101'
+aspell
+cd-read
+cups-config
+dir
+expect
+ftp-rfc
+gnome-about
+groff
+hg-viz
+imsettings-reload
+kcmshell
+kpseaccess
+lnusertemp
+md5sum
+myisam_ftdump
+odbcinst
+pamstretch
+pbmtoptx
+pilot
+pnmnorm
+ppmtopi1
+qpid-printevents
+rmail
+seekwatcher
+snmpconf
+tcamgr
+unix2dos
+x86_64-redhat-linux-c++
+xterm
+
+Now I have the list of commands to investigate. I will use ldd on each,
+if an error message occurs, I will figure out why.
+I am going to store the values that ldd prints out into another file,
+so that I can sort and remove duplicates at the end. The file is called,
+libraries.txt
+
+Each time I call ldd on a command, it either prints out shared libraries,
+an arrow and finally a memory address OR that it is not a dynamic executable
+Ex: ldd /usr/bin/aspell
+linux-vdso.so.1 =>  (0x00007ffcdfee5000)
+libaspell.so.15 => /usr/lib64/libaspell.so.15 (0x0000003ceb000000)
+libncursesw.so.5 => /lib64/libncursesw.so.5 (0x0000003cf1000000)
+libdl.so.2 => /lib64/libdl.so.2 (0x0000003ceb400000)
+libstdc++.so.6 => /usr/lib64/libstdc++.so.6 (0x0000003cf1400000)
+libm.so.6 => /lib64/libm.so.6 (0x0000003ceac00000)
+libgcc_s.so.1 => /lib64/libgcc_s.so.1 (0x0000003cf0c00000)
+libc.so.6 => /lib64/libc.so.6 (0x0000003cea800000)
+libtinfo.so.5 => /lib64/libtinfo.so.5 (0x0000003cfc400000)
+/lib64/ld-linux-x86-64.so.2 (0x0000003cea400000)
+
+The rest of the commands follow in similar fashion.
+I simply put the number of libraries for each instead of the
+output to save space (This was deemed OK on Piazza).
+For the executables that do not print out libraries,
+I explain why after the ':'
+
+aspell - Prints out 10 shared libraries and memory addresses
+cd-read -  Prints out 6 shared libraries and memory addresses
+cups-config - Not a dynamic executable: Problem with a.out compatibility
+dir -  Prints out 10 shared libraries and memory addresses
+expect - Prints out 7 shared libraries and memory addresses
+ftp-rfc - Not a dynamic executable: No shared libraries
+gnome-about - Not a dynamic executable: No shared libraries
+groff - Prints out 6 shared libraries and memory addresses
+hg-viz - Not a dynamic executable: No shared libraries
+imsettings-reload - Prints out 17 shared libraries and memory addresses
+kcmshell - Prints out 47 shared libraries and memory addresses
+kpseaccess - Prints out 3 shared libraries and memory addresses
+lnusertemp - Prints out 3 shared libraries and memory addresses
+md5sum - Prints out 3 shared libraries and memory addresses
+myisam_ftdump - Prints out 10 shared libraries and memory addresses
+odbcinst - Prints out 7 shared libraries and memory addresses
+pamstretch - Prints out 5 shared libraries and memory addresses
+pbmtoptx - Prints out 5 shared libraries and memory addresses
+pilot - Prints out 32 shared libraries and memory addresses
+pnmnorm - Prints out 5 shared libraries and memory addresses
+ppmtopi1 - Prints out 5 shared libraries and memory addresses
+qpid-printevents - Not a dynamic executable: Problem with a.out compatibility
+rmail - Prints out 33 shared libraries and memory addresses
+seekwatcher - Not a dynamic executable: No shared libraries
+snmpconf - Not a dynamic executable: No shared libraries
+tcamgr - Prints out 8 shared libraries and memory addresses
+unix2dos - Prints out 3 shared libraries and memory addresses
+x86_64-redhat-linux-c++ - Prints out 3 shared libraries and memory addresses
+xterm - Prints out 23 shared libraries and memory addresses
+
+The commands with (Not a dynamic executable) printed out an error
+when I ran ldd on them. This occured because they do not use any
+dynamic libraries, so they are not a dynamic executable.
+This means that they cannot print anything out when ldd is run,
+because they do not have any shared libraries.
+
+Sorted list:
+I sorted and removed duplicates from my list in libraries.txt
+cat libraries.txt | sort -u >> lab.txt
+	/lib64/ld-linux-x86-64.so.2 
+	libacl.so.1
+	libart_lgpl_2.so.2
+	libaspell.so.15
+	libattr.so.1
+	libbz2.so.1
+	libcap.so.2
+	libcdio.so.10
+	libcom_err.so.2
+	libcrypto.so.10
+	libcrypt.so.1
+	libc.so.6
+	libdb-4.7.so
+	libdbus-1.so.3
+	libdbus-glib-1.so.2
+	libDCOP.so.4
+	libdl.so.2
+	libexpat.so.1
+	libexpect5.44.1.15.so
+	libfontconfig.so.1
+	libfreebl3.so
+	libfreetype.so.6
+	libgcc_s.so.1
+	libgio-2.0.so.0
+	libglib-2.0.so.0
+	libgmodule-2.0.so.0
+	libgobject-2.0.so.0
+	libgssapi_krb5.so.2
+	libgthread-2.0.so.0
+	libhesiod.so.0
+	libICE.so.6
+	libidn.so.11
+	libimsettings.so.4
+	libiso9660.so.7
+	libjpeg.so.62
+	libk5crypto.so.3
+	libkdecore.so.4
+	libkdefx.so.4
+	libkdeinit_kcmshell.so
+	libkdesu.so.4
+	libkdeui.so.4
+	libkeyutils.so.1
+	libkio.so.4
+	libkrb5.so.3
+	libkrb5support.so.0
+	libkutils.so.1
+	libkwalletclient.so.1
+	liblber-2.4.so.2
+	liblcms.so.1
+	libldap-2.4.so.2
+	libltdl.so.7
+	libmng.so.1
+	libm.so.6
+	libncurses.so.5
+	libncursesw.so.5
+	libnetpbm.so.10
+	libnsl.so.1
+	libnspr4.so
+	libnss3.so
+	libnssutil3.so
+	libodbcinst.so.2
+	libplc4.so
+	libplds4.so
+	libpng12.so.0
+	libpthread.so.0
+	libqt-mt.so.3
+	libresolv.so.2
+	librt.so.1
+	libsasl2.so.2
+	libselinux.so.1
+	libsmime3.so
+	libSM.so.6
+	libssl3.so
+	libssl.so.10
+	libstdc++.so.6
+	libtcl8.5.so
+	libtinfo.so.5
+	libtokyocabinet.so.8
+	libutempter.so.0
+	libutil.so.1
+	libuuid.so.1
+	libwrap.so.0
+	libX11.so.6
+	libXau.so.6
+	libXaw.so.7
+	libxcb.so.1
+	libXcursor.so.1
+	libXext.so.6
+	libXfixes.so.3
+	libXft.so.2
+	libXinerama.so.1
+	libXi.so.6
+	libXmu.so.6
+	libXpm.so.4
+	libXrandr.so.2
+	libXrender.so.1
+	libXt.so.6
+	libz.so.1
+	linux-vdso.so.1
+
+There are many libraries that have different memory locations,
+so I asked my TA about what to do with them.
+He said to just keep the library names before the => and remove any
+duplicates that were still there after doing that,
+so that is what I did and here is the sorted list with
+dupicates removed.
+
+-End of lab.txt

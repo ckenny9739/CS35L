@@ -1,0 +1,132 @@
+Connor Kenny
+log.txt
+
+Install openssh:
+
+dpkg --get-selections | grep openssh
+sudo apt-get install openssh-server
+sudo apt-get install openssh-client
+
+Now both of them are installed and I am good to go.
+
+Generate public and private keys:
+ssh-keygen
+
+I bypassed the passphrase by just hitting enter instead
+of entering a passphrase.
+It gave me my own randomart image to identify me.
+It is a rectangle with different characters in it.
+
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/ubuntu/.ssh/id_rsa):
+Created directory '/home/ubuntu/.ssh'.
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/ubuntu/.ssh/id_rsa.
+Your public key has been saved in /home/ubuntu/.ssh/id_rsa.pub.
+The key fingerprint is:
+f2:93:08:8e:33:e8:95:cc:db:53:08:77:d5:0c:cd:dd ubuntu@ubuntu
+The key's randomart image is:
++---[RSA 2048]----+
+|         .* . .  |
+|         . = . E |
+|        .        |
+|   . . .         |
+|    + + S        |
+| .oo.o = .       |
+|. +=. o +        |
+|. .oo.   .       |
+| . . ..          |
++-----------------+
+
+Find IP and try communicating via IP:
+ifconfig
+(Found IP by looking for 10.97.85.xyz
+Found xyz for me to be 120)
+
+My IP address is 10.97.85.120
+
+ping 10.97.85.120
+
+This sends packets of information until I press Ctrl-c
+That means that this worked!!
+
+64 bytes from 10.97.85.120: icmp_seq=1 ttl=64 time=0.035 ms
+64 bytes from 10.97.85.120: icmp_seq=2 ttl=64 time=0.027 ms
+64 bytes from 10.97.85.120: icmp_seq=3 ttl=64 time=0.026 ms
+64 bytes from 10.97.85.120: icmp_seq=4 ttl=64 time=0.026 ms
+64 bytes from 10.97.85.120: icmp_seq=5 ttl=64 time=0.028 ms
+64 bytes from 10.97.85.120: icmp_seq=6 ttl=64 time=0.026 ms
+64 bytes from 10.97.85.120: icmp_seq=7 ttl=64 time=0.026 ms
+64 bytes from 10.97.85.120: icmp_seq=8 ttl=64 time=0.026 ms
+64 bytes from 10.97.85.120: icmp_seq=9 ttl=64 time=0.026 ms
+64 bytes from 10.97.85.120: icmp_seq=10 ttl=64 time=0.027 ms
+64 bytes from 10.97.85.120: icmp_seq=11 ttl=64 time=0.026 ms
+64 bytes from 10.97.85.120: icmp_seq=12 ttl=64 time=0.026 ms
+64 bytes from 10.97.85.120: icmp_seq=13 ttl=64 time=0.027 ms
+64 bytes from 10.97.85.120: icmp_seq=14 ttl=64 time=0.027 ms
+64 bytes from 10.97.85.120: icmp_seq=15 ttl=64 time=0.039 ms
+64 bytes from 10.97.85.120: icmp_seq=16 ttl=64 time=0.026 ms
+64 bytes from 10.97.85.120: icmp_seq=17 ttl=64 time=0.026 ms
+64 bytes from 10.97.85.120: icmp_seq=18 ttl=64 time=0.027 ms
+64 bytes from 10.97.85.120: icmp_seq=19 ttl=64 time=0.027 ms
+64 bytes from 10.97.85.120: icmp_seq=20 ttl=64 time=0.034 ms
+64 bytes from 10.97.85.120: icmp_seq=21 ttl=64 time=0.026 ms
+64 bytes from 10.97.85.120: icmp_seq=22 ttl=64 time=0.039 ms
+64 bytes from 10.97.85.120: icmp_seq=23 ttl=64 time=0.027 ms
+64 bytes from 10.97.85.120: icmp_seq=24 ttl=64 time=0.027 ms
+64 bytes from 10.97.85.120: icmp_seq=25 ttl=64 time=0.027 ms
+64 bytes from 10.97.85.120: icmp_seq=26 ttl=64 time=0.027 ms
+64 bytes from 10.97.85.120: icmp_seq=27 ttl=64 time=0.024 ms
+64 bytes from 10.97.85.120: icmp_seq=28 ttl=64 time=0.025 ms
+
+My partners IP addresses are:
+
+10.0.2.15 (She is on her own computer so the beginning is different)
+10.97.85.102
+
+Setting up the server:
+
+ubuntu@ubuntu:~$ sudo useradd -d /home/usersfolder -m username
+ubuntu@ubuntu:~$ sudo passwd username
+Enter new UNIX password:
+Retype new UNIX password:
+passwd: password updated successful
+ubuntu@ubuntu:~$ cd /home/u
+ubuntu/      usersfolder/
+ubuntu@ubuntu:~$ cd /home/usersfolder/
+ubuntu@ubuntu:/home/usersfolder$ sudo mkdir .ssh
+ubuntu@ubuntu:/home/usersfolder$ sudo chown -R username .ssh
+ubuntu@ubuntu:/home/usersfolder$ sudo chmod 700 .ssh
+ubuntu@ubuntu:/home/usersfolder$ sudo nano /etc/ssh/sshd_config
+
+I created the usersfolder directory to house my users
+I created the username username
+I set the password to password
+I changed the ownership and permissions
+I changed PasswordAuthentication from yes to no
+This lets us disable password-based authentication
+
+I logged in to my partner's server using the following:
+(his username was 'kum' and IP was 10.97.85.102)
+This basically copies the public key over the sever and adds private key
+
+ssh-copy-id -i kum@10.97.85.102
+ssh-add
+
+I ssh'd by doing both the regular and the -X versions:
+ssh kum@10.97.85.102
+ssh -X kum@10.97.85.102
+
+I opened xterm on the -X version
+(-X is necessary to have the xterm screen show up)
+by typing in:
+xterm
+
+It opened!! Everything seems to be working
+(It also works with firefox so we are all set).
+
+Finally I typed in the following to set home to be used by client:
+chmod o-rwx "$HOME"
+
+- End of log.txt

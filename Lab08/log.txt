@@ -1,0 +1,63 @@
+Connor Kenny
+log.txt
+
+Checked sort --version and exported the correct path with:
+export PATH=/usr/local/cs/bin:$PATH
+
+Create file with 10M random double-precision floating point numbers:
+
+od -t f -N 60000000 < /dev/urandom | sed 's/^[0-9]\{7\}[ \t]*//' | tr -s ' ' '\n' | sed '/^\n&/d' > fpfile
+
+This generates a file with 11118929 floating point numbers
+1 per line with no whitespace called fpfile.
+
+Checking the time of the unparallelized sort:
+time -p sort -g < fpfile > /dev/null
+real 39.90
+user 186.68
+sys 0.39
+
+I found that the parallel option is used by adding
+an integer n in --parallel=n where n is the number of threads.
+
+1 Thread:
+time -p sort -g --parallel=1 < fpfile > /dev/null
+real 157.37
+user 157.22
+sys 0.21
+
+Real and user time are basically the same (1 Thread)
+
+2 Threads:
+time -p sort -g --parallel=2 < fpfile > /dev/null
+real 83.92
+user 159.06
+sys 0.25
+
+Real time is about 1/2	of user	time (2 Threads)
+
+4 Threads:
+time -p sort -g --parallel=4 < fpfile > /dev/null
+real 48.97
+user 164.65
+sys 0.34
+
+Real time is about 1/4 of user time (4 Threads)
+
+8 Threads:
+time -p sort -g --parallel=8 < fpfile > /dev/null
+real 34.92
+user 177.07
+sys 0.38
+
+Real time is about 1/8 of user time (8 Threads)
+
+So it turns out that #Threads=1,2,4 is actually slower than the original sort
+but when #Threads=8, it goes faster in real time.
+The system time is less when there is 1 Thread and increases as number
+of Threads increases (where unparallel time is less than to #Thread=8)
+The same pattern arises when looking at the user time -
+1 Thread is the least and increases up to 8 Threads which is similar to
+unparallelized version.
+
+- End of log.txt

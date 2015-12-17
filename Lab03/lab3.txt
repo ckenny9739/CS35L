@@ -1,0 +1,152 @@
+Connor Kenny
+lab3.txt
+
+First I read the spec and the messages that are in the spec.
+My goal is to patch the ls command to use the unix time format.
+
+Grab Coreutils 7.6.
+
+wget ftp://ftp.gnu.org/gnu/coreutils/coreutils-7.6.tar.gz
+
+tar –xzvf coreutils-7.6.tar.gz
+
+Compile and install your copy of Coreutils into a temporary
+directory of your own. Note any problems you run into.
+
+mkdir coreutilsInstall
+(This was done while in my home directory)
+
+Configure:
+
+./configure --prefix=/u/cs/ugrad/connork/coreutilsInstall
+
+(It didn't work until I put the correct prefix option
+with a full path for my directory)
+
+Make:
+
+make
+
+Install:
+
+make install
+
+(Now coreutils is installed in the correct temporary directory)
+
+Reproduce the bug on your machine with the unmodified version of coreutils.
+You may need to use the locale-gen program to generate the en_US.UTF-8 locale.
+
+Correct version ( ls -l):
+ls -l
+total 18496
+-rwxr-xr-x 1 connork csugrad 127695 Oct 12 21:53 [
+-rwxr-xr-x 1 connork csugrad 119326 Oct 12 21:53 base64
+-rwxr-xr-x 1 connork csugrad  90269 Oct 12 21:53 basename
+-rwxr-xr-x 1 connork csugrad 205995 Oct 12 21:53 cat
+-rwxr-xr-x 1 connork csugrad 250461 Oct 12 21:53 chcon
+...
+
+Bugged version (./ls -l):
+./ls -l
+total 18496
+-rwxr-xr-x 1 connork csugrad 127695 2015-10-12 21:53 [
+-rwxr-xr-x 1 connork csugrad 119326 2015-10-12 21:53 base64
+-rwxr-xr-x 1 connork csugrad  90269 2015-10-12 21:53 basename
+-rwxr-xr-x 1 connork csugrad 205995 2015-10-12 21:53 cat
+-rwxr-xr-x 1 connork csugrad 250461 2015-10-12 21:53 chcon
+...
+
+(Notice the difference in the date formats)
+
+Use Emacs or Vim to apply Brady's patch.
+
+I created a file called patch_file using:
+emacs patch_file
+
+Then I tried copying and pasting the patch from the message,
+but that wouldn't work after numerous attempts.
+The file would get weirdly formatted and the lines wouldn't
+line up.
+Finally, I used wget to get the html file for the message.
+Then I went through and deleted everything except for the
+message so that it stayed in the correct format.
+
+The patch was run by this command:
+patch -p1 < patch_file
+
+(use p1 to ignore the a/ and b/ in the patch)
+
+Type the command make at the top level of your source tree,
+so that you build (but do not install) the fixed version.
+For each command that gets executed,
+explain why it needed to be executed (or say that it wasn't neeeded).
+
+Typed in the command make in my coreutils-7.6 directory.
+It printed out the following commands (notes at bottom).
+
+make  all-recursive
+Making all in lib
+make  all-recursive
+Making all in src
+make  all-am
+  CC     ls.o
+  CCLD   dir
+  CCLD   vdir
+  CCLD   ls
+Making all in doc
+Making all in man
+  GEN    dir.1
+  GEN    vdir.1
+  GEN    ls.1
+Making all in po
+Making all in tests
+Making all in gnulib-tests
+make  all-recursive
+
+The make command executed many commands in sequence.
+All of the entering and leaving directories were to check
+whether anything needed to be fixed in those directories.
+These lines were left out so that I could fit in the
+80 column restriction and be more concise.
+There were also some print outs that said nothing
+needed to be done so I left those out as well for
+similar reasons. The entering and exiting directory
+command print outs were necessary for the ones that
+actually had something different about their contents -
+the directories with the ls.c file (which turns into
+the ls.o and ls files)
+
+Explanation:
+make all-recursive is going to go through lib and src
+to see what needs to be recompiled (the ls files).
+As you can see by what was printed, only files
+related to ls (ls.o, ls, dir, vdir, dir.1, vdir.1, ls.1)
+were involved in the new make attempt.
+The "making all in [insert directory]" commands
+besides lib, src and man were not necessary, but
+were executed because it makes recursively through each
+directory. We only really care if the make command
+recompiles the ls.c file and puts it together with
+the other related files. 
+
+Make sure your change fixes the bug, by testing that the modified ls
+works on your test case and that the installed ls doesn't.
+Test on a file that has been recently modified,
+and on a file that is at least a year old. You can use the touch
+command to artficially mark a file as being a year old.
+
+Recently modified file:
+touch f1
+
+File at least a year old:
+touch -t 201401210959.30 f2
+
+Run the new and improved ls command :
+./ls -l
+
+Prints the following (only showing output related to f1 & f2):
+-rw-r--r--  1 connork csugrad       0 Oct 13 00:20 f1
+-rw-r--r--  1 connork csugrad       0 Jan 21  2014 f2
+
+This is working correctly. It shows the dates in
+the traditional unix format. Also works for an older file.

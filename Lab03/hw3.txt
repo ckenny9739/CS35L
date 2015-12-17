@@ -1,0 +1,75 @@
+Connor Kenny
+hw3.txt
+
+Q1. Why did Brady's patch remove the line "case_long_iso_time_style:"?
+Was it necessary to remove that line? Explain.
+
+It was not necessary to remove this line, but it was done for clarity.
+The goto statement in the for loop was removed with the patch.
+This statement was to goto the case in the switch statement -
+case_long_iso_time_style:
+Basically, there is no way that case could come up after the patch.
+It was removed so nobody would try to find what situation
+would send the code to that statement. It left the other case because
+it is still an option.
+
+This line was removed:
+-                      goto case_long_iso_time_style;
+In the second Hunk of the patch, which makes the line:
+-          case_long_iso_time_style:
+no longer useful or needed, but it could have remained and
+the code would still work.
+
+
+Q2. If your company adopts this patched version of Coreutils
+instead of the default one, what else should you watch out for?
+Might this new version of Coreutils introduce other problems with your
+application, perhaps in countries where users don't speak English
+and don't understand English-format dates?
+
+This new version of Coreutils is very English centric as it does not
+use only numbers like the pre patch version. If somebody does not
+read English, they will not know what the months mean (even though
+they seem obvious to us as abbreviations). This could create confusion
+when my company works with people from around the world. It is more
+useful for the average English speaker, but would definitely create
+an interesting dilemma for non-English speaking people.
+The previous version is infinitely more universal than the patched.
+
+Q3. What happens when this script is invoked on an empty file
+like /dev/null, and why?
+
+Traceback (most recent call last):
+File "randline.py", line 70, in <module>
+main()
+File "randline.py", line 64, in main
+sys.stdout.write(generator.chooseline())
+File "randline.py", line 34, in chooseline
+return random.choice(self.lines)
+File "/usr/lib64/python2.6/random.py", line 261, in choice
+return seq[int(self.random() * len(seq))]
+# raises IndexError if seq is empty
+IndexError: list index out of range
+
+It prints this error out because seq is empty as the comment says.
+This is because the file we ran it on is empty.
+There are no lines to count and therefore no lines to print.
+We are basically trying to print a random line from no lines.
+It doesn't work out.
+
+
+Q4. What happens when this script is invoked with Python 3 rather than
+Python 2, and why? (You can run Python 3 on the SEASnet hosts by using
+the command python3 instead of python.)
+
+It outputs the following:
+File "randline.py", line 65
+    except IOError as (errno, strerror):
+                      ^
+	SyntaxError: invalid syntax
+
+This happens because Python 2 and 3 have different syntax
+rules for automatic tuple unpacking.
+Python 2 allows you to enter a tuple as a function argument,
+but Python 3 removed this functionality to avoid unneccesary issues.
+It caused too many problems for what it was worth.

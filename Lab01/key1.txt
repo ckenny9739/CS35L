@@ -1,0 +1,178 @@
+Connor Kenny
+key1.txt
+
+Explaination of keys:
+For my computer C-c is done by pressing CTRL and c.
+M-c is done by pressing ESC and c.
+
+Lab:
+
+1. How can you get man to print all the commands that have
+a specific word in their man page (or at least the
+description part of the man page)? (hint: man man)
+m a n SP - K [insert word here]
+Example: man -K Square
+
+2. Where are the cp and wc programs
+located in the file system?
+w h e r e i s SP c p
+w h e r e i s SP w c
+OR
+l o c a t e SP c p
+l o c a t e SP w c
+
+3. What executable programs have names that are just
+one character long, and what do they do?
+l o c a t e SP - b ' ? '
+
+4. When you execute the command named by the symbolic
+link /usr/bin/cc, which file actually is executed?
+l s SP - l SP c c
+
+5. The chmod program changes permissions on a file.
+What does the symbolic mode g-s mean, in terms of permissions?
+m a n SP c h m o d
+/ g - s
+
+6. What option to find lets you search for files
+that have been modified in the last 3 days?
+f i n d SP - m t i m e SP - 4
+
+7. Use the previous answer to find all directories
+modified in the last 3 days.
+f i n d SP - m t i m e SP - 4
+
+8. Of the files in the same directory as find,
+how many of them are symbolic links?
+f i n d SP - t y p e SP l 
+
+9. What is the oldest regular file in
+the /usr/lib directory?
+l s SP - t r l SP | SP h e a d
+
+(Use head so that we can easily see the oldest 10 files)
+
+10. Where does the locale command get its data from?
+m a n SP l o c a l e
+
+(Questions 11-14 were completed by searching through emacs itself.
+There are no specific keystrokes. The answers to the questions
+are in ans1.txt. Emacs is run by typing emacs)
+
+11. In Emacs, what commands have sort in their name?
+Found using documentation command index.
+This is found by going to emacs
+Going to manual and then command index.
+
+12. Briefly, what do the Emacs keystrokes C-a
+through C-z do? Can you list their actions concisely?
+Found using documentation key index.
+This is found by going to emacs
+Going to manual and then key index.
+
+13. In more detail, what does the Emacs keystroke C-g do?
+Found using documentation key index.
+This is found by going to emacs
+Going to manual and then key index.
+
+14. What does the Emacs yank function do?
+Found using documentation concept index.
+This is found by going to emacs
+Going to manual and then concept index.
+
+15. When looking at the directory /usr/bin,
+what's the difference between the output of the ls -l command,
+and the directory listing of the Emacs dired command?
+l s SP - l
+AND
+C - x 	C - d
+
+Exercises:
+
+1.1:
+
+C-s a s c
+Backspace Backspace Backspace i n s
+Backspace Backspace Backspace h C-b
+C-s h u C-b C-b
+C-e
+C-a
+C-x C-c
+
+1.2:
+
+M-g M-g 18 Enter C-k
+M-g M-g 92 Enter C-k
+M-g M-g 299 Enter C-k C-n C-k C-n C-k
+C-s < ! Enter Backspace Backspace C-d C-d C-d C-d C-d
+C-x C-s C-x C-c
+
+1.3:
+
+M-% t SP 1 Enter t SP 3 7 Enter SP SP Enter
+M-< M-% T F - 8 Enter S - A S C I I Enter SP Enter
+M-< C-s < o Enter C-e C-o
+C-x C-s Enter y e s Enter C-x C-c
+
+1.4:
+
+M-> C-p C-p C-p C-p C-p C-f C-SP C-e M-w M-g M-g 3 3 6
+    Enter C-SP C-e Backspace C-y 
+M-g M-g 3 7 5 Enter C-f C-SP C-e C-n C-n M-w M-g M-g 2 9 9
+    Enter C-y C-d C-d C-a C-d C-p C-d
+M-g M-g 3 6 6 Enter C-f C-SP C-e M-w M-g M-g 9 2 Enter C-y
+M-g M-g 3 5 7 Enter C-f C-SP C-e M-w M-g M-g 1 8 Enter C-y
+M-g M-g 3 5 1 Enter C-SP M-> Backspace C-x u
+- - > M-g M-g 3 5 1 Enter < ! - -
+M-< M-% < o l > Enter < O l > Enter !
+C-x C-s C-x C-c
+
+1.5:
+
+CREATING THE FILE:
+c d ~ Enter m k d i r SP j u n k
+c d SP j u n k
+t o u c h SP h e l l o . c
+
+COMPILING THE FILE:
+M-x c o m p i l e Enter h e l l o Enter
+
+OPENING THE BUFFER AND RUNNING THE FILE:
+C-x b h e l l o - o u t Enter C-u M-! . / h e l l o Enter
+
+COPY AND PASTING THE TEXT INTO LOG
+C-x h M-w
+[Switch to log]
+C-y
+
+OUTPUT:
+#include <stdio.h>
+int
+main (void)
+{
+  char n = '\n';
+    char b = '\\';
+      char q = '"';
+        char const *p = "#include <stdio.h>%cint%cmain (void)%c{%c  char n = '%cn';%c  char b = '%c%c';%c  char q = '%c';%c  char const *p = %c%s%c;%c  printf (p, n, n, n, n, b, n, b, b, n, q, n, q, p, q, n, n, n, n);\
+	%c  return 0;%c}%c";
+	  printf (p, n, n, n, n, b, n, b, b, n, q, n, q, p, q, n, n, n, n);
+	    return 0;
+	    }
+
+1.6:
+
+C-x b Enter
+( r a n d o m ( ) ) Enter
+PRODUCED: -596099807410467176
+( s e t q SP x ( r a n d o m ) ) C-j
+PRODUCED: -1991167950720268004 
+( s e t q SP y ( r a n d o m ) ) C-j
+PRODUCED: -1226525254015129947
+( s e t q SP z ( r a n d o m ) ) C-j
+PRODUCED: 346696100731441450
+( * x y z ) C-j
+PRODUCED: 1513486417341182968
+M-: ( * x y z ) Enter
+PRODUCED: 1513486417341182968 (#o124007676026577771770, #x1500fbe0b5fff3f8)
+
+

@@ -1,0 +1,163 @@
+Connor Kenny
+lab.txt
+
+First I made all the files that are needed for this lab using the touch command.
+
+We are making two implementations of transliteration programs
+- for buffered and unbuffered input.
+
+Begin writing tr2b.c:
+I basically just made sure to check for errors I thought could arise.
+Then I read each character one by one using getchar().
+If it needed to be translated then I did, if not, I just printed the original.
+This was done with putchar().
+When compiled with:
+g++ -o tr2b tr2b.c
+and run with:
+./tr2b [insert from here] [insert to here]
+It works just as tr does without options.
+
+Begin writing tr2u.c:
+Basically the same process as the previous program except I changed the getchar()
+and putchar() to read() and write() respectively.
+I had to make sure to choose the correct input and output ID (1 for stdin, 2 for stdout).
+This was fairly simple after completing the first part.
+
+Now for the testing:
+
+Create a file of at least 5000000 bytes:
+< /dev/urandom tr -dc "\t\n [:alnum:]" | head -c5000000 > file.txt
+
+Learned how to use strace using man strace.
+
+Copying file to another:
+
+tr2b -
+strace -c ./tr2b abcdefghij 1234567890 < file.txt > copyfiletoanotherb
+
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+  0.00    0.000000           0        82           read
+  0.00    0.000000           0        77           write
+  0.00    0.000000           0         5           open
+  0.00    0.000000           0         5           close
+  0.00    0.000000           0         7           fstat
+  0.00    0.000000           0        18           mmap
+  0.00    0.000000           0         8           mprotect
+  0.00    0.000000           0         1           munmap
+  0.00    0.000000           0         1           brk
+  0.00    0.000000           0         1         1 access
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0         1           arch_prctl
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.000000                   207         1 total
+
+tr2u -
+strace -c ./tr2u abcdefghij 1234567890 < file.txt > copyfiletoanotheru
+
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 58.34    0.177269           0   5000000           write
+ 41.66    0.126580           0   5000005           read
+  0.00    0.000000           0         5           open
+  0.00    0.000000           0         5           close
+  0.00    0.000000           0         5           fstat
+  0.00    0.000000           0        16           mmap
+  0.00    0.000000           0         8           mprotect
+  0.00    0.000000           0         1           munmap
+  0.00    0.000000           0         1           brk
+  0.00    0.000000           0         1         1 access
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0         1           arch_prctl
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.303849              10000049         1 total
+
+Clearly, tr2u has significantly more system calls than tr2b.
+There are roughly 50,000x the number of system calls.
+This caused tr2u to take multiple minutes to run while
+tr2b was nearly instant.
+
+tr2b: 207 System Calls
+tr2u: 10000049 System Calls
+
+Copying file to terminal:
+
+tr2b -
+strace -c ./tr2b abcdefghij 1234567890 < file.txt
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 99.61    0.007494           0     77152           write
+  0.39    0.000029           0        82           read
+  0.00    0.000000           0         5           open
+  0.00    0.000000           0         5           close
+  0.00    0.000000           0         7           fstat
+  0.00    0.000000           0        18           mmap
+  0.00    0.000000           0         8           mprotect
+  0.00    0.000000           0         1           munmap
+  0.00    0.000000           0         1           brk
+  0.00    0.000000           0         1         1 access
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0         1           arch_prctl
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.007523                 77282         1 total
+
+tr2u -
+strace -c ./tr2u abcdefghij 1234567890 < file.txt
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 57.14    0.564217           0   5000000           write
+ 42.86    0.423188           0   5000005           read
+  0.00    0.000023           5         5           open
+  0.00    0.000000           0         5           close
+  0.00    0.000000           0         5           fstat
+  0.00    0.000000           0        16           mmap
+  0.00    0.000000           0         8           mprotect
+  0.00    0.000000           0         1           munmap
+  0.00    0.000000           0         1           brk
+  0.00    0.000000           0         1         1 access
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0         1           arch_prctl
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.987428              10000049         1 total
+
+Again, tr2u is much slower than tr2b, but this time it is closer.
+This is because tr2b had to write many more times than last time.
+Now tr2u had roughly 130x more system calls as compared to 50,000x before.
+As expected, tr2u had the same number of system calls because it
+basically does the same thing between a file and the terminal.
+It has to write 1 charactera at a time no matter what.
+tr2b did not have to write as many times in the first run through.
+
+tr2b: 77282 System Calls
+tr2u: 10000049 System Calls
+
+Time (for the 5,000,000 byte file):
+
+time ./tr2b abcdefghij 1234567890 < file.txt
+time ./tr2u abcdefghij 1234567890 < file.txt
+
+tr2b -
+
+real 0m0.622s
+user 0m0.294s
+sys  0m0.260s
+
+tr2u -
+
+real 0m7.253s
+user 0m0.385s
+sys  0m6.929s
+
+Ratio of Time:
+
+tr2b is ~12 times faster in real time
+tr2b is ~1.5 times faster in user time
+tr2b is ~26.5 times faster in sys time
+
+Overall, tr2b is much faster than tr2u which makes sense
+because of the difference in system calls and the previous exercise.
+I would definitely choose tr2b if I had to pick one over the other,
+but an interesting test would be to increase the number of bytes read by
+tr2u. This would reduce number of system calls along with speed (I would guess).
+
+- End lab.txt

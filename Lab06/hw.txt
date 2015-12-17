@@ -1,0 +1,48 @@
+Connor Kenny
+hw.txt
+
+1. Suppose the other teams really had been observing all the bytes going across the network.
+Is your resulting network still secure?
+If so, explain why, and explain whether your answer would change if
+(1) you assumed the other teams had also tapped your keyboards and had observed all of your
+team's keystrokes, or
+(2) you are booting off USB and you assume the other teams temporarily had physical control
+of the USB. If not, explain any weaknesses of your team's setups, focusing on possible attacks
+by such outside observers.
+
+If they could observe the bytes, our network would still be secure because
+the bytes are encrypted when you ssh. They would just be seeing encrypted "garbage" that wouldn't
+make any sense to them.
+
+(1) If they tapped into our keyboards, they would be able to see what we typed in on either
+end of the network. This would result in our network being no longer secure. They could see
+our passphrases or passwords when we type them in. They would still get "garbage" if they
+tried to steal the messages once they are in the network, but since they have access to our
+keyboards, they can steal some information before it is sent. Basically, this would be very
+bad for our network and the bad guys could definitely gain access to stuff we don't want
+them to.
+
+(2) If we were booting off of USB and they had the USB, they would have access to the private
+key for our network. This means that they could just decrypt any of the messages they intercepted.
+This would basically mean that they have full access to our information over our network.
+This would be very bad for our network and it would no longer be secure.
+
+Our network is secure in the sense that you have to try to get into it, but if you have
+access to the keyboards or the usb or the private key (to decode), the network will become
+insecure. This makes sense because we did not implement very many security measures.
+We do have a private key to encrypt, but this becomes irrelevant to the intrusions (1) and (2)
+
+
+2. Explain why the gpg --verify command in the following instructions doesn't really verify
+that you personally created the tar file in question. How would you go about fixing this problem?
+
+It does not verify that somebody actually created the tar file. It can only verify that
+somebody with the key created the file, not that somebody specific did. Somebody could impersonate
+another person on the network by using their key. With the system we have currently, there
+would be no way to know if the person using the key is the person you want it to be.
+
+You could try to fix the problem by having an outside source keep track of the keys and
+who they belong to. This would require having an outside database that nobody in the network
+could access, but the database would need access to our network. This would require extreme
+trust in the outside source, but would allow you to make sure that the gpg --verify option
+can actually check that the person in question created the file.

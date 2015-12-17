@@ -1,0 +1,25 @@
+#! /bin/sh
+# buildwords script
+
+# Only get lines with <td> in them
+grep "<td>" |
+# Convert to lower case
+tr 'A-Z' 'a-z' |
+# Convert ` to '
+sed "s/\`/'/g" |
+# Get rid of HTML tags
+sed "s/<[^>]*.//g" |
+# Get rid of words inside of () - Similar to HTML tags
+sed 's/([^)]*)//g' |
+# Delete every other line (lines with English words)
+awk 'NR % 2 == 0' |
+# Turn commas into new lines
+tr , '\n' |
+# Turn spaces into new lines
+tr [:blank:] '\n' |
+# Get rid of blank lines
+sed '/^$/d' |
+# Get rid of non Hawaiian characters
+grep -v "[^pk'mnwlhaeiou]" |
+# Sort and remove duplicates
+sort -u

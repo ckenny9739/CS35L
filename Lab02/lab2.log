@@ -1,0 +1,183 @@
+Connor Kenny
+lab2.log
+
+First of all, this is my second time doing the lab and the homework.
+My script for sameln deleted everything in my project folder.
+I was testing it on another folder inside the project folder.
+I had completed the lab and almost finished sameln.
+This happened at 5pm on Friday, October 9...
+
+Now to the lab:
+
+I used the touch command to create this log: touch lab2.log
+
+I typed in locale to see if I was in the correct one.
+
+It outputted:
+
+LANG=en_US.UTF-8
+LC_CTYPE="en_US.UTF-8"
+LC_NUMERIC="en_US.UTF-8"
+LC_TIME="en_US.UTF-8"
+LC_COLLATE="en_US.UTF-8"
+LC_MONETARY="en_US.UTF-8"
+LC_MESSAGES="en_US.UTF-8"
+LC_PAPER="en_US.UTF-8"
+LC_NAME="en_US.UTF-8"
+LC_ADDRESS="en_US.UTF-8"
+LC_TELEPHONE="en_US.UTF-8"
+LC_MEASUREMENT="en_US.UTF-8"
+LC_IDENTIFICATION="en_US.UTF-8"
+LC_ALL=
+
+So I typed in the command:
+
+export LC_ALL='C'
+
+to fix it and checked with locale.
+
+I retrievd the words file using the command:
+
+cat /usr/share/dict/words | sort > words
+
+Now words contains all the words in the dictionary sorted correctly.
+
+I retreived the HTML file for assignment 2 with the command:
+
+wget
+http://web.cs.ucla.edu/classes/fall15/cs35L/assign/assign2.html
+assign2.html
+
+Now I am checking the output of the commands:
+
+tr -c 'A-Za-z' '[\n*]'
+
+It prints out the html file except anything that
+isn't a letter is now a new line.
+This happens because the -c option is complement.
+Anything but the letters is translated to new line.
+This means it prints out each words on a seperate line with blank
+lines inbetween.
+
+tr -cs 'A-Za-z' '[\n*]' < assign2.html
+
+Same thing as above except it now has the -s option too.
+This squeezes multiple instances of a character that is replaced into one.
+If there are multiple non letters in a row, now it only prints one new line.
+This means that each word has its own line with no blank lines.
+
+tr -cs 'A-Za-z' '[\n*]' < assign2.html | sort
+
+It prints the same thing as the previous command EXCEPT
+it sorts the words using the sort command and the pipeline.
+
+tr -cs 'A-Za-z' '[\n*]' < assign2.html | sort -u
+
+Same thing as above EXCEPT it removes duplicates when it sorts.
+This happens because of the -u option for unique.
+
+tr -cs 'A-Za-z' '[\n*]' < assign2.html | sort -u | comm - words
+
+Same thing as above EXCEPT it now uses the pipeline to the comm command.
+This compares it to the words file (basically the dictionary).
+Then it prints the words only in assign2.html in the first column.
+Prints words only in the words file in the second column.
+Finally it prints words in both in the third.
+
+tr -cs 'A-Za-z' '[\n*]' < assign2.html | sort -u | comm -23 - words
+
+Same thing as above EXCEPT it now suppresses the 2nd and 3rd columns.
+This happens because of the -23 option (for the column numbers).
+This basically now is a spell checker because it prints out words
+that are not in the dictionary.
+
+I created the hwords file using the following command:
+
+wget http://mauimapp.com/moolelo/hwnwdseng.htm > hwords
+
+Now I have to write the script buildwords to turn this file to
+a hawaiian dictionary.
+
+I use this command to run the script:
+
+cat hwnwdseng.htm | ./buildwords > hwords
+
+buildwords script:
+
+#! /bin/sh
+# buildwords script
+
+# Only get lines with <td> in them
+grep "<td>" |
+# Convert to lower case
+tr 'A-Z' 'a-z' |
+# Convert ` to '
+sed "s/\`/'/g" |
+# Get rid of HTML tags
+sed "s/<[^>]*.//g" |
+# Get rid of words inside of () - Similar to HTML tags
+sed 's/([^)]*)//g' |
+# Delete every other line (lines with English words)
+awk 'NR % 2 == 0' |
+# Turn commas into new lines
+tr , '\n' |
+# Turn spaces into new lines
+tr [:blank:] '\n' |
+# Get rid of blank lines
+sed '/^$/d' |
+# Get rid of non Hawaiian characters
+grep -v "[^pk'mnwlhaeiou]" |
+# Sort and remove duplicates
+sort -u
+
+
+Now I have to modify the command to check Hawaiian spelling:
+
+tr -cs "[^pk'mnwlhaeiou]" '[\n*]' | tr 'A-Z' 'a-z' |
+sort -u | comm -23 - hwords
+
+Also lower cases the input before it spell checks.
+
+Check on this web page:
+tr -cs "[^pk'mnwlhaeiou]" '[\n*]' < assign2.html | tr 'A-Z' 'a-z' |
+sort -u | comm -23 - hwords
+Count with | wc -l added to the end
+
+Printed out 202 words (202 words misspelled in English)
+This makes sense because it is a Hawaiian spell checker
+
+Check against hwords:
+tr -cs "[^pk'mnwlhaeiou]" '[\n*]' < hwords | tr 'A-Z' 'a-z' |
+sort -u | comm -23 - hwords
+Count with | wc -l added to the end
+
+Printed out 0 words
+This makes sense because it is spell checking against itself!
+
+Misspelled as English, but not as Hawaiian:
+tr -cs 'A-Za-z' '[\n*]' < assign2.html | sort -u |
+comm -23 - words > misspelledEnglish
+
+Then I used the command:
+
+comm -12 misspelledEnglish hwords
+
+It printed out nothing (no examples).
+
+Misspelled as Hawaiian, but not as English:
+tr -cs "[^pk'mnwlhaeiou]" '[\n*]' < assign2.html | tr 'A-Z' 'a-z' |
+sort -u | comm -23 - hwords > misspelledHawaiian
+
+Then I used the command:
+
+comm -12 misspelledHawaiian words
+
+It printed out 166 words (Ex. people, men, man)
+
+This marks the end of the lab portion of assignment 2.
+
+
+
+Homework: Also turning in sameln file which does everything
+that the spec requires.
+

@@ -1,0 +1,45 @@
+Connor Kenny
+hw4.txt (listed as both HI4.txt and hw4.txt in the spec... I chose this one)
+(There is an error with make check on student seasnet accounts
+Thuy Vu (my TA) said not to worry about it and that they would look into it.
+This causes make check to not work sometimes for no reason)
+
+Check out 3.0 of Diffutils:
+git checkout v3.0 -b quote
+
+Install:
+patch -p1 < ../quote-3.0-patch.txt
+
+add-chang-log-entry-other-window:
+This visits the change log for the file you are editing.
+We will use it to record the effect of the patch we are publishing.
+
+Adapting change log:
+C-x 4 a
+Use the Changelog from quote-patch.txt as a guide
+Mark what is changed by this patch
+Put the files changed and a short summary of the impact.
+
+Commit:
+git commit -F ../ChangeLog
+Number - quote 5e64577
+
+Generate formatted-patch.txt:
+git format-patch -1 --stdout > ../formatted-patch.txt
+(1 to get the most recent patch - the one I just committed)
+
+Verify that partner's patch works (Justin Liu):
+git checkout v3.0 -b partner
+git am < formatted-patch.txt
+Build and test - make check
+
+Verify that ChangeLog works:
+make distdir
+We are checking whether or not the commit message was added to the system.
+It ran smoothly and everything worked as it should.
+
+Run gitk:
+gitk
+Then I found the correct merge date, took a screenshot and described it.
+
+End of hw4.txt

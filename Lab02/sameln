@@ -1,0 +1,72 @@
+#!/bin/bash
+# sameln script
+
+# Set initial variables
+D=$1
+cd $D
+IFS=$'\n'
+let size=0
+declare -a fileArray
+
+dots=`ls -A | grep "^\." | sort`
+regs=`ls | sort`
+
+# Fill the Array
+for f in $dots
+do
+    if [ ! -r "$f" ]
+    then
+	echo ERROR: $f is unreadable
+	continue
+    fi
+
+    fileArray[$size]="$f"
+    let size=size+1
+done
+
+for f in $regs
+do
+    if [ ! -r "$f" ]
+    then
+	echo ERROR: $f is unreadable
+	continue
+    fi
+    
+    if [ ! -L "$f" ]
+    then
+	if [ -f "$f" ]
+	then
+	    fileArray[$size]="$f"
+	    let size=size+1
+	fi
+    fi
+done
+
+# Remove Duplicates and Hard Link
+let count1=0
+for f1 in "${fileArray[@]}"
+do
+    let count2=0
+    for f2 in "${fileArray[@]}"
+    do
+	if [ $f1 == $f2 ]
+	then
+	    continue
+	fi
+	
+	`cmp -s -- "$f1" "$f2"`
+	if [ $? == 0 ]
+	then
+	    if [ $count1 -lt $count2 ]
+	    then
+		echo "$f1 < $f2"
+		`rm -- $f2`
+		`ln -- $f1 $f2`
+	    fi
+	fi
+	let count2=count2+1
+    done
+    let count1=count1+1
+done
+
+		

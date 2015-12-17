@@ -1,0 +1,33 @@
+Connor Kenny
+gitk-description.txt
+
+The top middle subwindow:
+This shows all the commits(by name) on the left
+Who committed it (by name and email) in the middle
+And the date and time committed on the right
+
+The bottom left subwindow:
+This shows the ChangeLog with a search bar above it
+It also shows the patch file beneath if you scroll down.
+
+The bottom right subwindow:
+This shows the comments for the patch
+(it is usually pretty sparce from what I can see)
+
+
+The top window allows you to navigate through all the commits
+to find the one you want to look at. It also shows a timeline
++ branch summary on the far left. This allows you to see the
+different branches going on at any moment and where the
+specific commit was done.
+
+The bottom left allows you to read the Changelog and the patchfile.
+This is extremely useful and is most likely the reason you used
+gitk in the first place.
+
+Finally, the bottom right shows you the comments that the patchfile has.
+This is a good way to communicate with other contributors.
+This shows which files were changed, which is also useful.
+
+Also, there are numerous search bars/options/dropdown menus that allow you
+to navigate the gui better.

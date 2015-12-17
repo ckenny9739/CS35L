@@ -1,0 +1,309 @@
+Connor Kenny
+ans1.txt
+
+Lab:
+
+1. How can you get man to print all the commands that have a specific word in
+their man page
+(or at least the description part of the man page)? (hint: man man)
+Type in man -K [insert word here] for example man -k happy
+It then goes through each man page with that contains the word.
+You type in "y" or "n" or "q"
+The man page is very useful for learning commands.
+
+2. Where are the cp and wc programs located in the file system?
+The whereis command prints out these locations when you type in the
+commands whereis cp and whereis wc
+
+cp: /bin/cp /usr/share/man/man1/cp.1.gz /usr/share/man/man1p/cp.1p.gz
+wc: /usr/bin/wc /usr/share/man/man1/wc.1.gz /usr/share/man/man1p/wc.1p.gz
+
+The most important locations are:
+cp is in /bin/cp
+wc is in /usr/bin/wc
+
+3. What executable programs have names that are just
+one character long, and what do they do?
+There are 3 different executables in the bin folder
+that are one character long (X. [, w).
+These executables were found using locate -b '?'
+? is a wildcard so it only finds the single character files
+and -b allows you to enter a specific (base)name
+(There are a lot of other files that are one character,
+but do not fit the other requirements)
+
+X: X Window System that runs computing and graphics machines.
+[: When followed by conditional expressions and a ']',
+it will evaluate those expressions
+w: Shows who is logged on and what they are doing
+
+4. When you execute the command named by the symbolic link /usr/bin/cc,
+which file actually is executed?
+gcc is actually run when you execute this command.
+I used ls -l cc to see where the symbolic link goes.
+The symoblic links came up in a different color font.
+
+5. The chmod program changes permissions on a file.
+What does the symbolic mode g-s mean, in terms of permissions?
+This command clears the set-user-ID and set-group-ID bits.
+Found using man chmod and then /g-s to search for g-s
+
+6. What option to find lets you search for files that have been
+modified in the last 3 days?
+We want to use the -mtime -4  because we want in the last 3 days.
+We use -4 because that means strictly less than 4 (which is the last 3 days).
+
+7. Use the previous answer to find all directories
+modified in the last 3 days.
+Here are all the directories:
+.
+./Desktop
+./Desktop/desktop.ini
+./Desktop/CS 31
+./Desktop/CS 31/Paino
+./Desktop/CS 31/project 4
+./Desktop/CS33
+./Desktop/CS33/logs
+./Desktop/CS33/sthttpd-2.27.0
+./Desktop/CS33/openmplab
+./Desktop/cs 32
+./Desktop/CS35L
+./Desktop/CS35L/Lab02
+./Desktop/CS35L/Lab03
+./Desktop/CS35L/Lab04
+./Desktop/CS35L/Lab05
+./Desktop/CS35L/Lab06
+./Desktop/CS35L/Lab07
+./Desktop/CS35L/Lab08
+./Desktop/CS35L/Lab09
+./Desktop/CS35L/Lab10
+./Desktop/CS35L/Lab01
+./Desktop/CS35L/Lab01/key1.txt
+./Desktop/CS35L/Lab01/ans1.txt
+./Desktop/CS35L/Lab01/exer1.html
+./Desktop/CS35L/Lab01/exer2.html
+./Desktop/CS35L/Lab01/exer3.html
+./Desktop/CS35L/Lab01/key1.txt~
+./Desktop/CS35L/Lab01/ans1.txt~
+./Desktop/ubuntu-14.04.3-desktop-amd64.iso
+./Documents
+./Documents/desktop.ini
+./Documents/MobaXterm/MobaXterm.ini
+./Downloads
+./Downloads/desktop.ini
+./.bash_history
+./.lesshst
+./.Xauthority
+./.dbus
+./.dbus/session-bus
+./.dbus/session-bus/11492b4d963dcb0e733a05150000004a-15
+./.gconf
+./.gconfd
+./.gconfd/saved_state
+./.emacs.d/auto-save-list
+./.config
+./.config/gtk-2.0
+./.config/gtk-2.0/gtkfilechooser.ini
+
+Found using find -mtime -4 because it should be < 4 days
+which is the last 3 days.
+
+8. Of the files in the same directory as find,
+how many of them are symbolic links?
+List of symbolic links:
+./domainname
+./gtar
+./ex
+./rnano
+./ksh
+./iptables-xml
+./csh
+./nisdomainname
+./traceroute6
+./awk
+./ypdomainname
+./view
+./dnsdomainname
+./mail
+./rview
+./rvi
+./sh
+./iptables-xml-1.4.7
+
+18 Links - found by going to the bin directory and typing find -type l.
+The symbolic links have an arrow to another file so they are easy to see.
+
+9. What is the oldest regular file in the /usr/lib directory?
+libgamin-1.so.0.1.10 from March	3 2010
+
+Found using: ls -trl | head
+This allowed me to see only the top 10 items in the list
+and then picked the oldest (1st in the list).
+
+10. Where does the locale command get its data from?
+If there are no arguments,
+it gets the data from the current locale environment.
+If there are arguments,
+it gets the data from the specified locale environment.
+Found using man locale.
+
+11. In Emacs, what commands have sort in their name?
+sort-lines
+sort-paragraphs
+sort-pages
+sort-fields
+sort-numeric-fields
+sort-columns
+tabulated-list-sort
+rmail-sort-by-subject
+rmail-sort-by-recipient
+rmail-sort-by-lines
+rmail-sort-by-labels
+rmail-sort-by-date
+rmail-sort-by-correspondent
+rmail-sort-by-author
+dired-sort-toggle-or-edit
+diary-sort-entries
+
+16 Commands with sort in the name.
+Found using the command index in the emacs manual.
+
+12. Briefly, what do the Emacs keystrokes C-a through C-z do?
+Can you list their actions concisely?
+C-a: Move to beginning of the line
+C-b: Moves backward a character
+C-c: Works with other key combinations to allow for more commands
+C-d: Delete character or send a EOF 
+C-e: Move to the end of the line
+C-f: Move forward one character
+C-g: Cancel a partially typed command
+C-h: Help
+C-i: Undocumented
+C-j: Insert new line
+C-k: Kill the rest of the line (erase the rest of the line)
+C-l: Recenters the window on the selected text line (scrolls vertically)
+C-m: When followed by another key it allows more commands to be run
+- similar to C-c
+C-n: Move down one screen line
+C-o: Insert a blank line after the cursor
+C-p: Move up one screen line
+C-q: Inserts a non=graphical character after the cursor
+C-r: Reverse incremental search - basically a reverse search
+C-s: Search
+C-t: Transpose 2 characters - swap them
+C-u: Multiplies	the following argument by 4. Also is the universal argument
+C-v: Scroll down by the windows height
+C-w: Kill the region - delete
+C-x: When used with other keys it allows for more commands to be run
+- similar to C-c and C-m
+C-y: Re-insert eh last text that was killed (yank)
+C-z: Minimizes the window or suspends emacs
+
+These were all found using the key index in the emacs manual.
+
+13. In more detail, what does the Emacs keystroke C-g do?
+It cancels the command that is waiting for an argument
+or cancels a command that is currently running.
+In the first case, this lets it cancel the mini-buffer.
+Basically, it just lets you halt the current command
+whether you are typing or running.
+
+14. What does the Emacs yank function do?
+It reinserts text that was previously killed.
+It serves as the "paste" in emacs.
+You kill the text and then yank it to somewhere else (copy and paste).
+Found using the emacs concept index.
+
+15. When looking at the directory /usr/bin, what's the difference between
+the output of the ls -l command,
+and the directory listing of the Emacs dired command?
+The ls -l command prints out all the files on the computer with the dates
+and other useful information (like read-write-execute permissions).
+Dired = Directory editor. It lists out everything that ls -l does,
+but also includes subdirectories.
+Basically, Dired shows a few more things than ls -l
+because it displays the subdirectories that ls -l doesn't.
+
+
+Exercises:
+
+1.1:
+9. I was going to use arrow keys, but then I read the questions.
+I did it the first time with emacs shortcuts.
+10. The keys that I used are in key1.txt.
+I did it in many less keystrokes than I would have if I used the arrow keys.
+This can be done much faster using the emacs commands.
+I took advantage of the search, goto line
+and other moving point commands to complete this effiiently.
+	
+1.2:
+This section has been completed
+and the keystrokes have been entered into key1.txt.
+This was done by utilizing the C-k command to delete
+and entire row along with M-g and C-s to move to each line.
+I either searched for the <!-- that signifies a comment
+or just used the row number to jump there.
+Then I deleted the comments, which completes this exercise.
+(Also, this was checked using the exer2.diff file)
+
+1.3:
+This section has been completed
+and the keystrokes have been entered into key1.txt.
+Important Commands used were M-% (Query Replace)
+and M-< (Move to beginning of buffer).
+With these commands replacing text is extremely easy.
+These keys were found in the emacs manual.
+(Also, this was checked using the exer3.diff file)
+	
+1.4:
+I completed this exercise by using a lot of moving point commands.
+I was able to move the cursor around quickly without having to do it manually.
+This exercise was much more realistic
+than the previous one because it included an undo.
+I utilized C-SP to set the mark so that I could copy and paste M-w and C-y.
+I used M-% to query replace the <ol>.
+8. I found and replaced 7 instances all with the ! key.
+(Also, this was checked with the exer4.diff file)
+	
+1.5:
+I created a new directory with mkdir junk
+I then carefully typed in the C-program exactly as it was written.
+I compiled by doing M-x compile and called the file hello.
+It outputted the following:
+I ran the program by doing M-! ./hello
+It outputted the following:
+#include <stdio.h>
+int
+main (void)
+{
+  char n = '\n';
+    char b = '\\';
+      char q = '"';
+        char const *p = "#include <stdio.h>%cint%cmain (void)%c{%c  char n = '%cn';%c  char b = '%c%c';%c  char q = '%c';%c  char const *p = %c%s%c;%c  printf (p, n, n, n, n, b, n, b, b, n, q, n, q, p, q, n, n, n, n);\
+	%c  return 0;%c}%c";
+	  printf (p, n, n, n, n, b, n, b, b, n, q, n, q, p, q, n, n, n, n);
+	    return 0;
+	        }
+
+1.6:
+Visited the *scratch* buffer by C-x b
+I computed a random integer by using (random()) and then C-j
+I assigned the values to x y and z by using (setq x (random)) C-j
+(Repeat for y and z)
+I did the product using (* x y z)
+x:-1991167950720268004
+y:-1226525254015129947
+z:346696100731441450
+4. This produced: 1513486417341182968.
+The answer is very wrong.
+The multiplication probably overflowed to arrive at the wrong answer.
+5. I tried again with M-: (eval-expression) and got
+1513486417341182968 (#o124007676026577771770, #x1500fbe0b5fff3f8)
+This added the two numbers in the parenthesis after the answer
+6. Random integers are never actually random in the mathematical sense.
+They aren't random because they are created
+using a very good pseudo-random algorithm. 
+The algorithm uses floating point or prime numbers
+and then multiplies and mods the result to arrive at a psuedo-random number.
+They are also based off of a seed that gives the algorithm the inital value.
+The random numbers are based off this seed.
